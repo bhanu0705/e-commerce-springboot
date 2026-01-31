@@ -333,22 +333,32 @@ This project is created for learning and interview preparation purposes.
 
 ---
 
-## 🔧 Recent Bug Fixes & Improvements
+## 🔧 Troubleshooting & Debugging Guide
 
-### 1. Fixed "ProtocolException: Invalid HTTP method: PATCH"
+Here are common issues you might face when extending this project and how to solve them.
 
-- **Issue:** Authenticated calls from Order Service to Product Service failed with a 500 error during stock updates.
-- **Cause:** The default JDK HTTP client used by Feign does not support the `PATCH` method.
-- **Fix:** Refactored the internal API to use `@PutMapping` instead of `@PatchMapping` for stock updates.
+### 1. "ProtocolException: Invalid HTTP method: PATCH"
 
-### 2. Fixed "Parameter Name" Issues
+- **Symptom:** Order creation fails with `500 Internal Server Error`. Order Service logs show `java.net.ProtocolException`.
+- **Cause:** The default Java HTTP client used by Feign doesn't support PATCH.
+- **Solution:** Use `PUT` or `POST` for inter-service updates, or configure Feign to use Apache HttpClient.
+  - _We used `PUT` for simplicity in this project._
 
-- **Issue:** Microservices failed to resolve path variables (e.g., `id`).
-- **Cause:** Spring Boot 3.2+ requires explicit parameter names if `-parameters` compiler flag isn't set.
-- **Fix:** Updated all controllers to use explicit names like `@PathVariable("id")` and `@RequestParam("status")`.
+### 2. "Parameter Name not specified" (400 Bad Request)
 
-### 3. Addressed "Service Routing" Conflicts
+- **Symptom:** API returns `400 Bad Request` with message `Name for argument of type [X] not specified, and parameter name information not found in class file`.
+- **Cause:** Spring Boot 3.2+ doesn't automatically map variable names to parameter names unless compiled with `-parameters`.
+- **Solution:** Always be explicit with annotations in your Controllers and Feign Clients.
+  - ❌ `@PathVariable Long id`
+  - ✅ `@PathVariable("id") Long id`
+  - ❌ `@RequestParam String status`
+  - ✅ `@RequestParam("status") String status`
 
-- **Issue:** Feign clients routing to stale service instances.
-- **Cause:** Multiple duplicate instances of services were running on different ports.
-- **Fix:** Ensured only one instance of each service runs and clean restart of Discovery Server.
+### 3. Service Connectivity / 503 Errors
+
+- **Symptom:** `Connection refused` or `Load balancer does not contain an instance for the service`.
+- **Cause:** Service isn't running, Eureka hasn't discovered it yet, or multiple ghost instances are running.
+- **Solution:**
+  1. Check Eureka Dashboard (http://localhost:8761).
+  2. Ensure only ONE instance of each service is running (kill orphan java processes).
+  3. **Wait 30s** after starting a service for it to register with Eureka.
