@@ -1,0 +1,61 @@
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║                      ORDER SERVICE CONFIGURATION                          ║
+# ╠═══════════════════════════════════════════════════════════════════════════╣
+# ║  This service calls other services, so Feign configuration is important  ║
+# ╚═══════════════════════════════════════════════════════════════════════════╝
+
+server:
+  port: 8082
+
+spring:
+  application:
+    name: order-service
+
+  datasource:
+    url: jdbc:h2:mem:orderdb
+    driverClassName: org.h2.Driver
+    username: sa
+    password: password
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+# Eureka configuration
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true # IMPORTANT: Order service needs to fetch registry to find other services!
+  instance:
+    prefer-ip-address: true
+
+# ──────────────────────────────────────────────────────────────────────────
+# FEIGN CONFIGURATION
+# ──────────────────────────────────────────────────────────────────────────
+# Feign uses these settings when calling other services
+
+spring.cloud.openfeign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000 # Max time to establish connection (5 seconds)
+        readTimeout: 5000 # Max time to wait for response (5 seconds)
+        loggerLevel: FULL # Log all request/response details (for debugging)
+
+# Logging
+logging:
+  level:
+    com.ecommerce.order: DEBUG
+    # Log Feign requests (helpful for debugging inter-service calls)
+    feign: DEBUG

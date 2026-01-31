@@ -1,0 +1,71 @@
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║                       API GATEWAY CONFIGURATION                           ║
+# ╠═══════════════════════════════════════════════════════════════════════════╣
+# ║  This file defines HOW the Gateway routes requests to services            ║
+# ║                                                                           ║
+# ║  ROUTING FLOW:                                                            ║
+# ║  1. Request comes: GET http://localhost:8080/api/products                 ║
+# ║  2. Gateway checks routes below, finds matching predicate                 ║
+# ║  3. Replaces "lb://product-service" with actual URL from Eureka           ║
+# ║  4. Forwards request to Product Service                                   ║
+# ╚═══════════════════════════════════════════════════════════════════════════╝
+
+server:
+  port: 8080 # THE main port clients will use
+
+spring:
+  application:
+    name: api-gateway
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # GATEWAY ROUTES CONFIGURATION
+  # ──────────────────────────────────────────────────────────────────────────
+  cloud:
+    gateway:
+      # Enable service discovery in routes (lb:// means load-balanced)
+      discovery:
+        locator:
+          enabled: true # Allow routes like lb://service-name
+          lower-case-service-id: true # Use lowercase service names
+
+      # Define explicit routes for each service
+      routes:
+        # ──────────────────────────────────────────────────────────────────
+        # PRODUCT SERVICE ROUTE
+        # ──────────────────────────────────────────────────────────────────
+        - id: product-service # Unique identifier for this route
+          uri: lb://product-service # "lb://" = load balanced, pulls URL from Eureka
+          predicates:
+            - Path=/api/products/** # Match any request starting with /api/products
+          # Example: GET /api/products/1 → Product Service's /api/products/1
+
+        # ──────────────────────────────────────────────────────────────────
+        # ORDER SERVICE ROUTE
+        # ──────────────────────────────────────────────────────────────────
+        - id: order-service
+          uri: lb://order-service
+          predicates:
+            - Path=/api/orders/**
+
+        # ──────────────────────────────────────────────────────────────────
+        # USER SERVICE ROUTE
+        # ──────────────────────────────────────────────────────────────────
+        - id: user-service
+          uri: lb://user-service
+          predicates:
+            - Path=/api/users/**
+
+# ──────────────────────────────────────────────────────────────────────────
+# EUREKA CLIENT CONFIGURATION
+# ──────────────────────────────────────────────────────────────────────────
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/ # Where to find Eureka Server
+    register-with-eureka: true # Register this gateway with Eureka
+    fetch-registry: true # Get list of other services (for routing)
+
+# Logging
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG # See routing decisions in console

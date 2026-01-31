@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    ╔═══════════════════════════════════════════════════════════════════════════╗
+    ║                          API GATEWAY POM                                  ║
+    ╠═══════════════════════════════════════════════════════════════════════════╣
+    ║  WHAT IS AN API GATEWAY?                                                  ║
+    ║  - Single entry point for ALL client requests                             ║
+    ║  - Frontend only talks to Gateway (port 8080), not individual services    ║
+    ║  - Gateway routes requests: /api/products → Product Service               ║
+    ║                                                                           ║
+    ║  BENEFITS:                                                                ║
+    ║  - Hide internal architecture from clients                                ║
+    ║  - Add cross-cutting concerns: auth, logging, rate limiting              ║
+    ║  - Load balancing between multiple instances of a service                ║
+    ╚═══════════════════════════════════════════════════════════════════════════╝
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>com.ecommerce</groupId>
+        <artifactId>ecommerce-microservices</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    
+    <artifactId>api-gateway</artifactId>
+    <name>API Gateway</name>
+
+    <dependencies>
+        <!-- 
+            SPRING CLOUD GATEWAY: Modern, reactive API Gateway
+            - Uses Project Reactor (non-blocking)
+            - Much faster than older Zuul Gateway
+        -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-gateway</artifactId>
+        </dependency>
+        
+        <!-- 
+            EUREKA CLIENT: So Gateway can discover other services
+            When a request comes for "product-service", Gateway asks Eureka:
+            "Where is product-service?" and routes the request there
+        -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

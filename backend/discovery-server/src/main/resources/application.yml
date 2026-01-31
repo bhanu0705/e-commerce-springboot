@@ -1,0 +1,53 @@
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║                    DISCOVERY SERVER CONFIGURATION                         ║
+# ╠═══════════════════════════════════════════════════════════════════════════╣
+# ║  YAML vs Properties:                                                       ║
+# ║  - application.properties: server.port=8761                               ║
+# ║  - application.yml: Uses indentation (cleaner for nested properties)      ║
+# ║                                                                           ║
+# ║  Both work the same way! YAML is just easier to read for complex configs  ║
+# ╚═══════════════════════════════════════════════════════════════════════════╝
+
+# Server configuration
+server:
+  port: 8761 # Eureka's default port (you'll access dashboard at localhost:8761)
+
+# Spring application name (shows up in logs and Eureka dashboard)
+spring:
+  application:
+    name: discovery-server # This is how this service identifies itself
+
+# Eureka configuration
+eureka:
+  instance:
+    hostname: localhost # The hostname to register (localhost for local development)
+
+  client:
+    # ──────────────────────────────────────────────────────────────────────────
+    # IMPORTANT: These settings are SPECIFIC to the Eureka SERVER
+    # Regular services (product, order, user) will have these set to TRUE
+    # ──────────────────────────────────────────────────────────────────────────
+
+    register-with-eureka: false
+    # Why FALSE?
+    # - The Eureka Server itself doesn't need to register with anyone
+    # - It IS the registry, so it doesn't register itself
+    # - Client services will set this to TRUE to register with this server
+
+    fetch-registry: false
+    # Why FALSE?
+    # - The server doesn't need to fetch the registry from anywhere
+    # - It IS the source of truth for the registry
+    # - Client services set this TRUE to get list of other services
+
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+      # This is the URL where Eureka server is available
+      # Client services will use this URL to register themselves
+      # The ${...} syntax references values defined above (like variables)
+
+# Logging - so you can see what's happening
+logging:
+  level:
+    com.netflix.eureka: INFO
+    com.netflix.discovery: INFO

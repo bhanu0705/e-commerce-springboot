@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    ╔═══════════════════════════════════════════════════════════════════════════╗
+    ║                           PARENT POM (pom.xml)                            ║
+    ╠═══════════════════════════════════════════════════════════════════════════╣
+    ║  WHAT IS THIS?                                                            ║
+    ║  - This is the "parent" project that manages ALL our microservices        ║
+    ║  - Think of it like a "folder" that contains all our services             ║
+    ║  - It defines COMMON dependencies so we don't repeat them in each service ║
+    ║                                                                           ║
+    ║  WHY USE A PARENT POM?                                                    ║
+    ║  - Version management: Define Spring Boot version ONCE, use everywhere    ║
+    ║  - Consistency: All services use same dependency versions                 ║
+    ║  - Build all services with one command: mvn clean install                 ║
+    ╚═══════════════════════════════════════════════════════════════════════════╝
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <!-- 
+        GROUP ID: Like a package name, identifies your organization
+        ARTIFACT ID: Name of this project
+        VERSION: Your project version
+        PACKAGING: "pom" means this is a parent project (not a JAR)
+    -->
+    <groupId>com.ecommerce</groupId>
+    <artifactId>ecommerce-microservices</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    
+    <name>E-Commerce Microservices</name>
+    <description>Parent POM for E-Commerce Microservices Project</description>
+
+    <!-- 
+        MODULES: List all child projects (microservices)
+        Maven will build these in the correct order automatically
+    -->
+    <modules>
+        <module>discovery-server</module>
+        <module>api-gateway</module>
+        <module>product-service</module>
+        <module>order-service</module>
+        <module>user-service</module>
+    </modules>
+
+    <!-- 
+        PROPERTIES: Variables we can reuse throughout this file
+        ${java.version} will be replaced with "17" wherever used
+    -->
+    <properties>
+        <java.version>17</java.version>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        
+        <!-- Spring versions - change here to update ALL services -->
+        <spring.boot.version>3.2.0</spring.boot.version>
+        <spring.cloud.version>2023.0.0</spring.cloud.version>
+    </properties>
+
+    <!-- 
+        DEPENDENCY MANAGEMENT: Define versions here, child projects inherit them
+        Child projects just say "I want spring-boot-starter-web" without version
+        The version is automatically picked from here
+    -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- Spring Boot BOM (Bill of Materials) - manages all Spring Boot dependency versions -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring.boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            
+            <!-- Spring Cloud BOM - manages Eureka, Gateway, Feign versions -->
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring.cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- 
+        DEPENDENCIES: These are inherited by ALL child projects
+        Every microservice will automatically have these
+    -->
+    <dependencies>
+        <!-- 
+            LOMBOK: Reduces boilerplate code
+            Instead of writing getters/setters manually, just use @Data annotation
+            Example: @Data on a class auto-generates getters, setters, toString, equals
+        -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        
+        <!-- For testing our services -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- 
+        BUILD PLUGINS: Tools used during the build process
+    -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!-- Spring Boot Maven Plugin: Allows running with 'mvn spring-boot:run' -->
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring.boot.version}</version>
+                    <configuration>
+                        <!-- Tell Lombok to be processed at compile time -->
+                        <excludes>
+                            <exclude>
+                                <groupId>org.projectlombok</groupId>
+                                <artifactId>lombok</artifactId>
+                            </exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>

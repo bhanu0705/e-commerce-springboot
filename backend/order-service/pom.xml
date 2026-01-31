@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    ╔═══════════════════════════════════════════════════════════════════════════╗
+    ║                          ORDER SERVICE POM                                ║
+    ╠═══════════════════════════════════════════════════════════════════════════╣
+    ║  THE MOST IMPORTANT MICROSERVICE FOR INTERVIEW!                          ║
+    ║                                                                           ║
+    ║  This service demonstrates INTER-SERVICE COMMUNICATION:                  ║
+    ║  - Calls Product Service to verify products exist & update stock         ║
+    ║  - Calls User Service to verify user exists                              ║
+    ║                                                                           ║
+    ║  NEW DEPENDENCY: OpenFeign                                               ║
+    ║  - Declarative REST client                                               ║
+    ║  - You write an interface, Feign implements it                           ║
+    ║  - Integrates with Eureka for service discovery                          ║
+    ╚═══════════════════════════════════════════════════════════════════════════╝
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>com.ecommerce</groupId>
+        <artifactId>ecommerce-microservices</artifactId>
+        <version>1.0.0</version>
+    </parent>
+    
+    <artifactId>order-service</artifactId>
+    <name>Order Service</name>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+        </dependency>
+        
+        <!-- 
+            ═══════════════════════════════════════════════════════════════════
+            OPENFEIGN: The key dependency for inter-service communication
+            ═══════════════════════════════════════════════════════════════════
+            
+            What is Feign?
+            - A declarative HTTP client
+            - You write an interface, Feign creates the implementation
+            - Integrates with Eureka - uses service names, not URLs
+            
+            Without Feign (using RestTemplate):
+            ```java
+            ResponseEntity<ProductDto> response = restTemplate.getForEntity(
+                "http://product-service/api/products/" + productId, 
+                ProductDto.class
+            );
+            ```
+            
+            With Feign (much cleaner):
+            ```java
+            ProductDto product = productClient.getProduct(productId);
+            ```
+            
+            INTERVIEW TIP:
+            "I use Feign for synchronous service-to-service communication.
+             It's declarative, integrates with Eureka for service discovery,
+             and supports features like circuit breakers and load balancing."
+        -->
+        <dependency>
+            <groupId>org.springframework.cloud</groupId>
+            <artifactId>spring-cloud-starter-openfeign</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

@@ -1,0 +1,67 @@
+# ╔═══════════════════════════════════════════════════════════════════════════╗
+# ║                     PRODUCT SERVICE CONFIGURATION                         ║
+# ╠═══════════════════════════════════════════════════════════════════════════╣
+# ║  This is the complete configuration for the Product microservice          ║
+# ╚═══════════════════════════════════════════════════════════════════════════╝
+
+server:
+  port: 8081 # Each microservice runs on a different port
+
+spring:
+  application:
+    name: product-service # IMPORTANT: This name is used by Eureka and Feign clients!
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # DATABASE CONFIGURATION (H2 In-Memory)
+  # ──────────────────────────────────────────────────────────────────────────
+  datasource:
+    url: jdbc:h2:mem:productdb # In-memory database named "productdb"
+    # jdbc:h2:mem = H2 in memory mode (data lost when app stops)
+    # jdbc:h2:file:./data/productdb = File mode (data persisted)
+
+    driverClassName: org.h2.Driver
+    username: sa # Default H2 username
+    password: password # Password (can be empty for H2)
+
+  # H2 Console - Web UI to view/query database
+  h2:
+    console:
+      enabled: true
+      path: /h2-console # Access at http://localhost:8081/h2-console
+
+  # ──────────────────────────────────────────────────────────────────────────
+  # JPA/HIBERNATE CONFIGURATION
+  # ──────────────────────────────────────────────────────────────────────────
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+      # Options:
+      # - create-drop: Create tables on startup, drop on shutdown (dev)
+      # - create: Create tables (overwrites existing)
+      # - update: Update schema without losing data
+      # - validate: Only validate, don't change schema (production)
+      # - none: Do nothing
+
+    show-sql: true # Print SQL queries to console (helpful for learning!)
+
+    properties:
+      hibernate:
+        format_sql: true # Pretty-print SQL queries
+
+# ──────────────────────────────────────────────────────────────────────────
+# EUREKA CLIENT CONFIGURATION
+# ──────────────────────────────────────────────────────────────────────────
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true # Register this service
+    fetch-registry: true # Get list of other services
+  instance:
+    prefer-ip-address: true # Register with IP instead of hostname
+
+# Logging
+logging:
+  level:
+    com.ecommerce.product: DEBUG
+    org.springframework.web: DEBUG
