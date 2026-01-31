@@ -99,6 +99,21 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Handle IllegalArgumentException (business logic validation errors)
+     */
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<Map<String, Object>> handleIllegalArgument(
+            IllegalArgumentException ex) {
+        
+        Map<String, Object> error = createErrorResponse(
+            HttpStatus.BAD_REQUEST, 
+            ex.getMessage()
+        );
+        
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    /**
      * Catch-all for any unhandled exceptions
      * Prevents stack traces from being exposed
      */
@@ -108,11 +123,11 @@ public class GlobalExceptionHandler {
         
         Map<String, Object> error = createErrorResponse(
             HttpStatus.INTERNAL_SERVER_ERROR,
-            "An unexpected error occurred"
+            "An unexpected error occurred: " + ex.getMessage()
         );
         
-        // In production, you'd log the actual exception here
-        // log.error("Unexpected error", ex);
+        // Log the actual exception for debugging
+        ex.printStackTrace();
         
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }

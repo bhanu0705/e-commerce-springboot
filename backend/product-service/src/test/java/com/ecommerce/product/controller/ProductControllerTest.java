@@ -245,7 +245,7 @@ class ProductControllerTest {
             when(productService.updateStock(eq(1L), any(StockUpdateRequest.class)))
                     .thenReturn(updatedProduct);
 
-            mockMvc.perform(patch("/api/products/1/stock")
+            mockMvc.perform(put("/api/products/1/stock")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isOk())
@@ -260,7 +260,7 @@ class ProductControllerTest {
             when(productService.updateStock(eq(1L), any(StockUpdateRequest.class)))
                     .thenThrow(new IllegalArgumentException("Insufficient stock"));
 
-            mockMvc.perform(patch("/api/products/1/stock")
+            mockMvc.perform(put("/api/products/1/stock")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());

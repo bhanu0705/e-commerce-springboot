@@ -4,7 +4,7 @@ import com.ecommerce.order.dto.ProductDto;
 import com.ecommerce.order.dto.StockUpdateRequest;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -69,6 +69,6 @@ public interface ProductClient {
      * Equivalent to: PATCH http://product-service/api/products/{id}/stock
      * Body: { "quantityChange": -2 }
      */
-    @PatchMapping("/api/products/{id}/stock")
+    @PutMapping("/api/products/{id}/stock")
     ProductDto updateStock(@PathVariable("id") Long id, @RequestBody StockUpdateRequest request);
 }

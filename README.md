@@ -201,7 +201,7 @@ GET    /api/products/{id}      # Get product by ID
 POST   /api/products           # Create product
 PUT    /api/products/{id}      # Update product
 DELETE /api/products/{id}      # Delete product
-PATCH  /api/products/{id}/stock # Update stock quantity
+PUT    /api/products/{id}/stock # Update stock quantity
 ```
 
 ### Order Service
@@ -330,3 +330,25 @@ This project is created for learning and interview preparation purposes.
 ---
 
 **Happy Coding! 🚀**
+
+---
+
+## 🔧 Recent Bug Fixes & Improvements
+
+### 1. Fixed "ProtocolException: Invalid HTTP method: PATCH"
+
+- **Issue:** Authenticated calls from Order Service to Product Service failed with a 500 error during stock updates.
+- **Cause:** The default JDK HTTP client used by Feign does not support the `PATCH` method.
+- **Fix:** Refactored the internal API to use `@PutMapping` instead of `@PatchMapping` for stock updates.
+
+### 2. Fixed "Parameter Name" Issues
+
+- **Issue:** Microservices failed to resolve path variables (e.g., `id`).
+- **Cause:** Spring Boot 3.2+ requires explicit parameter names if `-parameters` compiler flag isn't set.
+- **Fix:** Updated all controllers to use explicit names like `@PathVariable("id")` and `@RequestParam("status")`.
+
+### 3. Addressed "Service Routing" Conflicts
+
+- **Issue:** Feign clients routing to stale service instances.
+- **Cause:** Multiple duplicate instances of services were running on different ports.
+- **Fix:** Ensured only one instance of each service runs and clean restart of Discovery Server.

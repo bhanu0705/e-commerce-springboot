@@ -82,7 +82,7 @@ public class ProductController {
      * Example: GET /api/products/5 → id = 5
      */
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> getProductById(@PathVariable Long id) {
+    public ResponseEntity<ProductDto> getProductById(@PathVariable("id") Long id) {
         ProductDto product = productService.getProductById(id);
         return ResponseEntity.ok(product);
     }
@@ -107,7 +107,7 @@ public class ProductController {
      */
     @GetMapping("/category/{category}")
     public ResponseEntity<List<ProductDto>> getProductsByCategory(
-            @PathVariable String category) {
+            @PathVariable("category") String category) {
         List<ProductDto> products = productService.getProductsByCategory(category);
         return ResponseEntity.ok(products);
     }
@@ -156,7 +156,7 @@ public class ProductController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<ProductDto> updateProduct(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody ProductDto productDto) {
         ProductDto updatedProduct = productService.updateProduct(id, productDto);
         return ResponseEntity.ok(updatedProduct);
@@ -173,9 +173,9 @@ public class ProductController {
      * Request Body:
      * { "quantityChange": -5 }  // Reduce stock by 5
      */
-    @PatchMapping("/{id}/stock")
+    @PutMapping("/{id}/stock")
     public ResponseEntity<ProductDto> updateStock(
-            @PathVariable Long id,
+            @PathVariable("id") Long id,
             @Valid @RequestBody StockUpdateRequest request) {
         ProductDto updatedProduct = productService.updateStock(id, request);
         return ResponseEntity.ok(updatedProduct);
@@ -192,7 +192,7 @@ public class ProductController {
      * Returns: 204 No Content (success but no body to return)
      */
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteProduct(@PathVariable("id") Long id) {
         productService.deleteProduct(id);
         return ResponseEntity.noContent().build();
         // Status 204 = "I did it successfully, nothing to show you"
